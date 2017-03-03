@@ -137,15 +137,15 @@ module mig_7series_v1_9_axi4_tg #(
   
 // AXI read address channel signals
    input                               axi_rready,     // Read address ready
-   output [C_AXI_ID_WIDTH-1:0]         axi_rid = 0,        // Read ID
-   output [C_AXI_ADDR_WIDTH-1:0]       axi_raddr = 0,      // Read address
-   output [7:0]                        axi_rlen = 0,       // Read Burst Length
-   output [2:0]                        axi_rsize = 0,      // Read Burst size
-   output [1:0]                        axi_rburst = 0,     // Read Burst type
-   output [1:0]                        axi_rlock = 0,      // Read lock type
-   output [3:0]                        axi_rcache = 0,     // Read Cache type
-   output [2:0]                        axi_rprot = 0,      // Read Protection type
-   output                              axi_rvalid = 0,     // Read address valid
+   output reg [C_AXI_ID_WIDTH-1:0]         axi_rid = 0,        // Read ID
+   output reg [C_AXI_ADDR_WIDTH-1:0]       axi_raddr = 0,      // Read address
+   output reg [7:0]                        axi_rlen = 0,       // Read Burst Length
+   output reg [2:0]                        axi_rsize = 0,      // Read Burst size
+   output reg [1:0]                        axi_rburst = 0,     // Read Burst type
+   output reg [1:0]                        axi_rlock = 0,      // Read lock type
+   output reg [3:0]                        axi_rcache = 0,     // Read Cache type
+   output reg [2:0]                        axi_rprot = 0,      // Read Protection type
+   output reg                              axi_rvalid = 0,     // Read address valid
   
 // AXI read data channel signals   
    input  [C_AXI_ID_WIDTH-1:0]         axi_rd_bid,     // Response ID
@@ -153,7 +153,7 @@ module mig_7series_v1_9_axi4_tg #(
    input                               axi_rd_rvalid,  // Read reponse valid
    input  [C_AXI_DATA_WIDTH-1:0]       axi_rd_data,    // Read data
    input                               axi_rd_last,    // Read last
-   output                              axi_rd_rready = 0,  // Read Response ready
+   output reg                              axi_rd_rready = 0,  // Read Response ready
 
 // Error status signals
    output                              cmd_err,      // Error during command phase
@@ -230,25 +230,6 @@ task axi_write;
     end
 endtask
 
-// AXI read address channel signals
-   input                               axi_rready,     // Read address ready
-   output [C_AXI_ID_WIDTH-1:0]         axi_rid,        // Read ID
-   output [C_AXI_ADDR_WIDTH-1:0]       axi_raddr,      // Read address
-   output [7:0]                        axi_rlen,       // Read Burst Length
-   output [2:0]                        axi_rsize,      // Read Burst size
-   output [1:0]                        axi_rburst,     // Read Burst type
-   output [1:0]                        axi_rlock,      // Read lock type
-   output [3:0]                        axi_rcache,     // Read Cache type
-   output [2:0]                        axi_rprot,      // Read Protection type
-   output                              axi_rvalid,     // Read address valid
-  
-// AXI read data channel signals   
-   input  [C_AXI_ID_WIDTH-1:0]         axi_rd_bid,     // Response ID
-   input  [1:0]                        axi_rd_rresp,   // Read response
-   input                               axi_rd_rvalid,  // Read reponse valid
-   input  [C_AXI_DATA_WIDTH-1:0]       axi_rd_data,    // Read data
-   input                               axi_rd_last,    // Read last
-   output                              axi_rd_rready,  // Read Response ready
 task axi_read;
     input    [07:00]        rlen;
     input    [02:00]        rsize;
@@ -256,7 +237,7 @@ task axi_read;
     input    [C_AXI_ADDR_WIDTH-1:00]        addr;
     input    [C_AXI_ID_WIDTH-1:00]        wid;
     begin
-        axi_rlen = rwlen;
+        axi_rlen = rlen;
         axi_rsize = rsize;
         axi_rburst = rburst;
         repeat(5) @(posedge aclk);
@@ -267,6 +248,12 @@ task axi_read;
         wait(axi_rready);
         @(posedge aclk);
         axi_rvalid = 0;
+
+        repeat(5) @(posedge aclk);
+        axi_rd_rready = 1;
+        wait(axi_rd_last & axi_rd_rvalid);
+        @(posedge aclk);
+        axi_rd_rready = 0;
     end
 endtask
 
@@ -275,6 +262,7 @@ initial
 begin
     //axi_write(2, 6, 1, 0, 0);
     axi_write(2, 6, 1, 0, 0);
+    axi_read(2, 6, 1, 0, 0);
 end
 
 endmodule
