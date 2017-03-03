@@ -1120,4 +1120,12 @@ function integer clogb2 (input integer size);
    assign po_win_tg_rst           = 'b0;
    assign vio_tg_rst              = 'b0;
 
+always @ (posedge clk)
+begin
+    if(s_axi_wvalid & s_axi_wready)
+        $display("awid is %d, awaddr is %h, awlen is %d, awsize is %d, wdata is %h", s_axi_awid, s_axi_awaddr, s_axi_awlen, s_axi_awsize, s_axi_wdata);
+
+    if(s_axi_rvalid & s_axi_rready)
+        $display("arid is %d, araddr is %h, arlen is %d, arsize is %d, rdata is %h", s_axi_arid, s_axi_araddr, s_axi_arlen, s_axi_arsize, s_axi_rdata);
+end
 endmodule
