@@ -111,29 +111,29 @@ module mig_7series_v1_9_axi4_tg #(
 
 // AXI write address channel signals
    input                               axi_wready, // Indicates slave is ready to accept a 
-   output [C_AXI_ID_WIDTH-1:0]         axi_wid,    // Write ID
-   output [C_AXI_ADDR_WIDTH-1:0]       axi_waddr,  // Write address
-   output [7:0]                        axi_wlen,   // Write Burst Length
-   output [2:0]                        axi_wsize,  // Write Burst size
-   output [1:0]                        axi_wburst, // Write Burst type
-   output [1:0]                        axi_wlock,  // Write lock type
-   output [3:0]                        axi_wcache, // Write Cache type
-   output [2:0]                        axi_wprot,  // Write Protection type
-   output                              axi_wvalid, // Write address valid
+   output reg [C_AXI_ID_WIDTH-1:0]         axi_wid = 0,    // Write ID
+   output reg [C_AXI_ADDR_WIDTH-1:0]       axi_waddr = 0,  // Write address
+   output reg [7:0]                        axi_wlen = 0,   // Write Burst Length
+   output reg [2:0]                        axi_wsize = 0,  // Write Burst size
+   output reg [1:0]                        axi_wburst = 0, // Write Burst type
+   output reg [1:0]                        axi_wlock = 0,  // Write lock type
+   output reg [3:0]                        axi_wcache = 0, // Write Cache type
+   output reg [2:0]                        axi_wprot = 0,  // Write Protection type
+   output reg                              axi_wvalid = 0, // Write address valid
   
 // AXI write data channel signals
    input                               axi_wd_wready,  // Write data ready
-   output [C_AXI_ID_WIDTH-1:0]         axi_wd_wid,     // Write ID tag
-   output [C_AXI_DATA_WIDTH-1:0]       axi_wd_data,    // Write data
-   output [C_AXI_DATA_WIDTH/8-1:0]     axi_wd_strb,    // Write strobes
-   output                              axi_wd_last,    // Last write transaction   
-   output                              axi_wd_valid,   // Write valid
+   output reg [C_AXI_ID_WIDTH-1:0]         axi_wd_wid = 0,     // Write ID tag
+   output reg [C_AXI_DATA_WIDTH-1:0]       axi_wd_data = 0,    // Write data
+   output reg [C_AXI_DATA_WIDTH/8-1:0]     axi_wd_strb = {64{1'b1}},    // Write strobes
+   output reg                              axi_wd_last = 0,    // Last write transaction   
+   output reg                              axi_wd_valid = 0,   // Write valid
   
 // AXI write response channel signals
    input  [C_AXI_ID_WIDTH-1:0]         axi_wd_bid,     // Response ID
    input  [1:0]                        axi_wd_bresp,   // Write response
    input                               axi_wd_bvalid,  // Write reponse valid
-   output                              axi_wd_bready,  // Response ready
+   output reg                             axi_wd_bready = 0,  // Response ready
   
 // AXI read address channel signals
    input                               axi_rready,     // Read address ready
@@ -176,237 +176,83 @@ module mig_7series_v1_9_axi4_tg #(
    output [DBG_RD_STS_WIDTH-1:0]       dbg_rd_sts      // Read status
 );
 
-//*****************************************************************************
-// Parameter declarations
-//*****************************************************************************
+//always @ (posedge clk)
+//begin
+    //axi_wlen = 0;
+    //axi_wsize = 0;
+    //axi_wlock = 0;
+    //axi_wcache = 0;
+    //axi_wprot = 0;
+    //axi_wd_wid = 0;
+    //axi_wd_strb = 0;
 
-  localparam CTL_SIG_WIDTH             = 3;  // Control signal width
-  localparam RD_STS_WIDTH              = 16; // Read port status signal width
-  localparam WDG_TIMER_WIDTH           = 11;
-  localparam WR_STS_WIDTH              = 16; // Write port status signal width
+    //axi_wid = 0;
+    //axi_waddr = 0;
+    //axi_wvalid = 0;
+    //axi_wd_data = 0;
+    //axi_wd_last = 0;
+    //axi_wd_valid = 0;
+    //axi_wd_data = 0;
+//end
 
-//*****************************************************************************
-// Internal register and wire declarations
-//*****************************************************************************
+task axi_write;
+    input    [07:00]        awlen;
+    input    [02:00]        awsize;
+    input    [01:00]        awburst;
+    input    [C_AXI_ADDR_WIDTH-1:00]        addr;
+    input    [C_AXI_ID_WIDTH-1:00]        wid;
 
-  wire                                 cmd_en;
-  wire [2:0]                           cmd;
-  wire [7:0]                           blen;
-  wire [31:0]                          addr;
-  wire [CTL_SIG_WIDTH-1:0]             ctl;
-  wire                                 cmd_ack;
+    begin
+        wait(init_cmptd);
+        begin
+            repeat(10) @(posedge aclk);
 
-// User interface write ports
-  wire                                 wrdata_vld;
-  wire [C_AXI_DATA_WIDTH-1:0]          wrdata;
-  wire [C_AXI_DATA_WIDTH/8-1:0]        wrdata_bvld;
-  wire                                 wrdata_cmptd;
-  wire                                 wrdata_rdy;
-  wire                                 wrdata_sts_vld;
-  wire [WR_STS_WIDTH-1:0]              wrdata_sts;
+            /*
+             * 写地址
+             */
+            axi_wid = wid;
+            repeat(10) @(posedge aclk);
+            axi_wlen = awlen;
+            axi_wsize = awsize;
+            axi_wburst = awburst;
+            repeat(2) @(posedge aclk);
+            axi_wvalid = 1;
+            wait (axi_wready);
+            @(posedge aclk);
+            axi_wvalid = 0;
 
-// User interface read ports
-  wire                                 rddata_rdy;
-  wire                                 rddata_vld;
-  wire [C_AXI_DATA_WIDTH-1:0]          rddata;
-  wire [C_AXI_DATA_WIDTH/8-1:0]        rddata_bvld;
-  wire                                 rddata_cmptd;
-  wire [RD_STS_WIDTH-1:0]              rddata_sts;
-  reg                                  cmptd_one_wr;
-  reg                                  cmptd_one_rd;
+            /*
+             * 写数据
+             */
+            repeat(5) @(posedge aclk);
+            axi_wd_valid = 1;
+            wait(axi_wd_wready);
+            begin
+                repeat(awlen)
+                begin
+                    axi_wd_data = ({$random} % 65536);
+                    @(posedge aclk);
+                end
+                axi_wd_last = 1;
+                axi_wd_data = ({$random} % 2);
+                @(posedge aclk);
+                axi_wd_last = 0;
+            end
+            axi_wd_valid = 0;
 
-//*****************************************************************************
-// AXI4 wrapper instance
-//*****************************************************************************
+            repeat(5) @(posedge aclk);
+            axi_wd_bready = 1;
+            wait(axi_wd_bvalid);
+            @(posedge aclk);
+            axi_wd_bready = 0;
+        end
+    end
+endtask
 
-  mig_7series_v1_9_axi4_wrapper #
-    (
-    
-     .C_AXI_ID_WIDTH                   (C_AXI_ID_WIDTH),
-     .C_AXI_ADDR_WIDTH                 (C_AXI_ADDR_WIDTH),
-     .C_AXI_DATA_WIDTH                 (C_AXI_DATA_WIDTH),
-     .C_AXI_NBURST_SUPPORT             (C_AXI_NBURST_SUPPORT),
-     .C_BEGIN_ADDRESS                  (C_BEGIN_ADDRESS),
-     .C_END_ADDRESS                    (C_END_ADDRESS),
-     .CTL_SIG_WIDTH                    (CTL_SIG_WIDTH),
-     .WR_STS_WIDTH                     (WR_STS_WIDTH),
-     .RD_STS_WIDTH                     (RD_STS_WIDTH),
-     .EN_UPSIZER                       (EN_UPSIZER),
-     .WDG_TIMER_WIDTH                  (WDG_TIMER_WIDTH)
-  
-  ) axi4_wrapper_inst
-  (
-     .aclk                             (aclk),
-     .aresetn                          (aresetn),
-     
-// User interface command port
-     .cmd_en                           (cmd_en),
-     .cmd                              (cmd),
-     .blen                             (blen),
-     .addr                             (addr),
-     .ctl                              (ctl),
-     .wdog_mask                        (wdog_mask),
-     .cmd_ack                          (cmd_ack),
-  
-// User interface write ports
-     .wrdata_vld                       (wrdata_vld),
-     .wrdata                           (wrdata),
-     .wrdata_bvld                      (wrdata_bvld),
-     .wrdata_cmptd                     (wrdata_cmptd),
-     .wrdata_rdy                       (wrdata_rdy),
-     .wrdata_sts_vld                   (wrdata_sts_vld),
-     .wrdata_sts                       (wrdata_sts),
-  
-// User interface read ports
-     .rddata_rdy                       (rddata_rdy),
-     .rddata_vld                       (rddata_vld),
-     .rddata                           (rddata),
-     .rddata_bvld                      (rddata_bvld),
-     .rddata_cmptd                     (rddata_cmptd),
-     .rddata_sts                       (rddata_sts),
-  
-// AXI write address channel signals
-     .axi_wready                       (axi_wready),
-     .axi_wid                          (axi_wid),
-     .axi_waddr                        (axi_waddr),
-     .axi_wlen                         (axi_wlen),
-     .axi_wsize                        (axi_wsize),
-     .axi_wburst                       (axi_wburst),
-     .axi_wlock                        (axi_wlock),
-     .axi_wcache                       (axi_wcache),
-     .axi_wprot                        (axi_wprot),
-     .axi_wvalid                       (axi_wvalid),
-  
-// AXI write data channel signals
-     .axi_wd_wready                    (axi_wd_wready),
-     .axi_wd_wid                       (axi_wd_wid),
-     .axi_wd_data                      (axi_wd_data),
-     .axi_wd_strb                      (axi_wd_strb),
-     .axi_wd_last                      (axi_wd_last),
-     .axi_wd_valid                     (axi_wd_valid),
-  
-// AXI write response channel signals
-     .axi_wd_bid                       (axi_wd_bid),
-     .axi_wd_bresp                     (axi_wd_bresp),
-     .axi_wd_bvalid                    (axi_wd_bvalid),
-     .axi_wd_bready                    (axi_wd_bready),
-  
-// AXI read address channel signals
-     .axi_rready                       (axi_rready),
-     .axi_rid                          (axi_rid),
-     .axi_raddr                        (axi_raddr),
-     .axi_rlen                         (axi_rlen),
-     .axi_rsize                        (axi_rsize),
-     .axi_rburst                       (axi_rburst),
-     .axi_rlock                        (axi_rlock),
-     .axi_rcache                       (axi_rcache),
-     .axi_rprot                        (axi_rprot),
-     .axi_rvalid                       (axi_rvalid),
-  
-// AXI read data channel signals   
-     .axi_rd_bid                       (axi_rd_bid),
-     .axi_rd_rresp                     (axi_rd_rresp),
-     .axi_rd_rvalid                    (axi_rd_rvalid),
-     .axi_rd_data                      (axi_rd_data),
-     .axi_rd_last                      (axi_rd_last),
-     .axi_rd_rready                    (axi_rd_rready)
-  );
-
-//*****************************************************************************
-// Traffic Generator instance
-//*****************************************************************************
-
-  mig_7series_v1_9_tg #
-    (
-  
-    .C_AXI_ADDR_WIDTH                  (C_AXI_ADDR_WIDTH),
-    .C_AXI_DATA_WIDTH                  (C_AXI_DATA_WIDTH),
-    .C_AXI_NBURST_SUPPORT              (C_AXI_NBURST_SUPPORT),
-    .C_BEGIN_ADDRESS                   (C_BEGIN_ADDRESS),
-    .C_END_ADDRESS                     (C_END_ADDRESS),
-    .C_EN_WRAP_TRANS                   (C_EN_WRAP_TRANS),
-    .CTL_SIG_WIDTH                     (CTL_SIG_WIDTH),
-    .WR_STS_WIDTH                      (WR_STS_WIDTH),
-    .RD_STS_WIDTH                      (RD_STS_WIDTH),
-    .DBG_WR_STS_WIDTH                  (DBG_WR_STS_WIDTH),
-    .DBG_RD_STS_WIDTH                  (DBG_RD_STS_WIDTH),
-    .ENFORCE_RD_WR                     (ENFORCE_RD_WR),
-    .ENFORCE_RD_WR_CMD                 (ENFORCE_RD_WR_CMD),
-    .PRBS_EADDR_MASK_POS               (PRBS_EADDR_MASK_POS),
-    .PRBS_SADDR_MASK_POS               (PRBS_SADDR_MASK_POS),
-    .ENFORCE_RD_WR_PATTERN             (ENFORCE_RD_WR_PATTERN)
-
-  ) traffic_gen_inst
-  (
-    .clk                               (aclk),
-    .resetn                            (aresetn),
-
-// Input start signals
-    .init_cmptd                        (init_cmptd),
-    .init_test                         (init_test),
-    .wrap_en                           (wrap_en),
-
-// Control ports
-    .cmd_ack                           (cmd_ack),
-    .cmd_en                            (cmd_en),
-    .cmd                               (cmd),
-    .blen                              (blen),
-    .addr                              (addr),
-    .ctl                               (ctl),
-
-// Write port
-    .wdata_rdy                         (wrdata_rdy),
-    .wdata_vld                         (wrdata_vld),
-    .wdata_cmptd                       (wrdata_cmptd),
-    .wdata                             (wrdata),
-    .wdata_bvld                        (wrdata_bvld),
-    .wdata_sts_vld                     (wrdata_sts_vld),
-    .wdata_sts                         (wrdata_sts),
-
-// Read Port
-    .rdata_vld                         (rddata_vld),
-    .rdata                             (rddata),
-    .rdata_bvld                        (rddata_bvld),
-    .rdata_cmptd                       (rddata_cmptd),
-    .rdata_sts                         (rddata_sts),
-    .rdata_rdy                         (rddata_rdy),
-
-// Error status signals
-    .cmd_err                           (cmd_err),
-    .data_msmatch_err                  (data_msmatch_err),
-    .write_err                         (write_err),
-    .read_err                          (read_err),
-    .test_cmptd                        (test_cmptd),
-    .write_cmptd                       (write_cmptd),
-    .read_cmptd                        (read_cmptd),
-
-// Debug status signals
-    .cmp_data_en                       (cmp_data_en),
-    .rdata_cmp                         (rdata_cmp),
-    .dbg_wr_sts_vld                    (dbg_wr_sts_vld),
-    .dbg_wr_sts                        (dbg_wr_sts),
-    .dbg_rd_sts_vld                    (dbg_rd_sts_vld),
-    .dbg_rd_sts                        (dbg_rd_sts)
-  );
-
-  assign cmp_data_o = wrdata;
-
-  always @(posedge aclk)
-    if (!aresetn) 
-      cmptd_one_wr <= 1'b0;
-    else if (write_cmptd)
-      cmptd_one_wr <= 1'b1;
-
-  always @(posedge aclk)
-    if (!aresetn) 
-      cmptd_one_rd <= 1'b0;
-    else if (read_cmptd)
-      cmptd_one_rd <= 1'b1;
-
-  always @(posedge aclk)
-    if (!aresetn) 
-      cmptd_one_wr_rd <= 1'b0;
-    else if (cmptd_one_wr & cmptd_one_rd)
-      cmptd_one_wr_rd <= 1'b1;
+initial
+begin
+    //axi_write(2, 6, 1, 0, 0);
+    axi_write(2, 6, 1, 0, 0);
+end
 
 endmodule
