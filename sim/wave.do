@@ -1,9 +1,10 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate /sim_tb_top/u_ip_top/u_axi4_tg_inst/aclk
+add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/init_calib_complete
 add wave -noupdate -divider {write config}
-add wave -noupdate -radix unsigned /sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen
-add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_awsize
+add wave -noupdate -radix unsigned -childformat {{{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[7]} -radix unsigned} {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[6]} -radix unsigned} {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[5]} -radix unsigned} {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[4]} -radix unsigned} {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[3]} -radix unsigned} {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[2]} -radix unsigned} {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[1]} -radix unsigned} {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[0]} -radix unsigned}} -subitemconfig {{/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[7]} {-radix unsigned} {/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[6]} {-radix unsigned} {/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[5]} {-radix unsigned} {/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[4]} {-radix unsigned} {/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[3]} {-radix unsigned} {/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[2]} {-radix unsigned} {/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[1]} {-radix unsigned} {/sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen[0]} {-radix unsigned}} /sim_tb_top/u_ip_top/u_DDR3/s_axi_awlen
+add wave -noupdate -radix unsigned /sim_tb_top/u_ip_top/u_DDR3/s_axi_awsize
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_awburst
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_awlock
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_awcache
@@ -21,10 +22,10 @@ add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_wlast
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_wvalid
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_wready
 add wave -noupdate -divider {write resp channal}
-add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_bready
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_bid
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_bresp
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_bvalid
+add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_bready
 add wave -noupdate -divider {read config}
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_arlen
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_arsize
@@ -46,8 +47,8 @@ add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_rlast
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_rready
 add wave -noupdate /sim_tb_top/u_ip_top/u_DDR3/s_axi_rvalid
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {110436250000 fs} 0}
-quietly wave cursor active 1
+WaveRestoreCursors {{Cursor 1} {112256250000 fs} 0} {{Cursor 3} {112213561052 fs} 0}
+quietly wave cursor active 2
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -62,4 +63,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits us
 update
-WaveRestoreZoom {110172307357 fs} {110700192643 fs}
+WaveRestoreZoom {111728364714 fs} {112784135286 fs}
