@@ -12,7 +12,11 @@
 
 # AXI使用
 ## 配置选项
-1. AWLEN and AWSIZE
+1. WSTRB[n:0]，写选通
+    位宽 = 写数据宽度/8，每位代表一个字节
+    为1时，数据写入
+
+2. AWLEN and AWSIZE
     AWLEN，表示一次突发写事务中传输的单位个数
 
     ![pic][1]        
@@ -27,10 +31,14 @@
     demo里，awlen = 2，awsize = 6
     根据上表可知，每次突发写3个单位，每个单位有64字节（512bit） 
 
-2. WSTRB[n:0]，写选通
-    位宽 = 写数据宽度/8，每位代表一个字节
-    为1时，数据写入
+3. 写操作
 
+4. 读操作
+
+    ![pic][3]        
+    
+    master写好地址和ID后，发送arvalid信号，等待arready，
+    然后发送rready，在rready和rvalid同时有效期间出数据
 # NOTE
 
 
@@ -38,3 +46,4 @@
 [2]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/axi_burst_size.png
 [3]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/awid%253D%253D0.png
 [4]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/awid%253D%253D1.png
+[5]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/arid%253D%253D0.png
