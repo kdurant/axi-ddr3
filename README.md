@@ -10,4 +10,16 @@
 
 4. 使用sv文件重写testbench
 
+# AXI使用
+## 配置选项
+1. AWLEN and AWSIZE
+    AWLEN，表示一次突发写事务中传输的单位个数
+    AWSIZE，表示每个单位数据长度
+    demo里，awlen = 2，awsize = 6
+    根据上表可知，每次突发写3个单位，每个单位有64字节（512bit） 
+
+2. WSTRB[n:0]，写选通
+    位宽 = 写数据宽度/8，每位代表一个字节
+    为1时，数据写入
+
 # NOTE
