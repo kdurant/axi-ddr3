@@ -1123,9 +1123,9 @@ function integer clogb2 (input integer size);
 always @ (posedge clk)
 begin
     if(s_axi_wvalid & s_axi_wready)
-        $display("awid is %d, awaddr is %h, awlen is %d, awsize is %d, wdata is %d", s_axi_awid, s_axi_awaddr, s_axi_awlen, s_axi_awsize, s_axi_wdata);
+        $display("awid:%d, awaddr:0x%h, awlen:%d, awsize:%d, wdata:0x%h", s_axi_awid, s_axi_awaddr, s_axi_awlen, s_axi_awsize, s_axi_wdata);
 
     if(s_axi_rvalid & s_axi_rready)
-        $display("arid is %d, araddr is %h, arlen is %d, arsize is %d, rdata is %d", s_axi_arid, s_axi_araddr, s_axi_arlen, s_axi_arsize, s_axi_rdata);
+        $display("arid:%d, araddr:0x%h, arlen:%d, arsize:%d, rdata:0x%h", s_axi_arid, s_axi_araddr, s_axi_arlen, s_axi_arsize, s_axi_rdata);
 end
 endmodule

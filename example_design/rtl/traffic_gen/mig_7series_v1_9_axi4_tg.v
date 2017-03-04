@@ -192,11 +192,11 @@ task axi_write;
              * 写地址
              */
             axi_wid = wid;
-            repeat(10) @(posedge aclk);
+            //repeat(10) @(posedge aclk);
             axi_wlen = awlen;
             axi_wsize = awsize;
             axi_wburst = awburst;
-            repeat(2) @(posedge aclk);
+            //repeat(2) @(posedge aclk);
             axi_wvalid = 1;
             wait (axi_wready);
             @(posedge aclk);
@@ -205,7 +205,7 @@ task axi_write;
             /*
              * 写数据
              */
-            repeat(5) @(posedge aclk);
+            //repeat(5) @(posedge aclk);
             axi_wd_valid = 1;
             wait(axi_wd_wready);
             begin
@@ -221,7 +221,7 @@ task axi_write;
             end
             axi_wd_valid = 0;
 
-            repeat(5) @(posedge aclk);
+            //repeat(5) @(posedge aclk);
             axi_wd_bready = 1;
             wait(axi_wd_bvalid);
             @(posedge aclk);
@@ -235,14 +235,14 @@ task axi_read;
     input    [02:00]        rsize;
     input    [01:00]        rburst;
     input    [C_AXI_ADDR_WIDTH-1:00]        addr;
-    input    [C_AXI_ID_WIDTH-1:00]        wid;
+    input    [C_AXI_ID_WIDTH-1:00]        rid;
     begin
         axi_rlen = rlen;
         axi_rsize = rsize;
         axi_rburst = rburst;
         repeat(5) @(posedge aclk);
-        axi_rid = 0;
-        axi_raddr = 0;
+        axi_rid = rid;
+        axi_raddr = addr;
         repeat(5) @(posedge aclk);
         axi_rvalid = 1;
         wait(axi_rready);
@@ -261,8 +261,43 @@ endtask
 initial
 begin
     //axi_write(2, 6, 1, 0, 0);
-    axi_write(2, 6, 1, 0, 0);
-    axi_read(2, 6, 1, 0, 0);
+    axi_write(2, 6, 1, 'h0, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h10, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h3f, 1);
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h40, 1);
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h41, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h5f, 1);
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h60, 1);
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h61, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h63, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h64, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h65, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h7f, 1);
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h80, 1);
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h81, 1);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'h100, 1);
 end
 
 endmodule
