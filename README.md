@@ -44,46 +44,49 @@
 
 3. wid和rid可以不一致。例如：wid = 1， rid = 2，只要操作地址一致，就可以正确读出数据
     
-4 . 单次写地址（addr = 0）后，读其他地址（addr = 10）时，还可以读出上次写的数据
+4. 读写地址
+
+设 地址增量为 I（axi写数据通道位宽/8)
+
+读写地址均为ddr3 memory中以byte为单位的地址。设置的写入地址最好为'h40的整数倍
+
+例如：写数据端口位宽为512bit，awlen = 2，awaddr = 0，则写入数据的地址分别为`'h00，'h40，'h80`
+
+读地址增量同理。
+
+当写地址不是 I 的整数倍时，实际写取数据的地址为：(raddr/'h40)`*`'h40
+
+当读地址不是 I 的整数倍时，实际读取数据的地址为：(raddr/'h40)`*`'h40
+
 ```
-# awid: 1, awaddr:0x00000000, awlen:  2, awsize:6, wdata:0x0000000000dadc
-# awid: 1, awaddr:0x00000000, awlen:  2, awsize:6, wdata:0x00000000008e75
-# awid: 1, awaddr:0x00000000, awlen:  2, awsize:6, wdata:0x00000000000001
+# awid: 1, awaddr:0x00000000, awlen:  2, awsize:6, wdata:0xfffffffffffffffffffffee47dadc
+# awid: 1, awaddr:0x00000000, awlen:  2, awsize:6, wdata:0xfffffffffffffffffffffbaa68e75
+# awid: 1, awaddr:0x00000000, awlen:  2, awsize:6, wdata:0xffffffffffffffffffffff5984aeb
 
-# arid: 1, araddr:0x0000003f, arlen:  2, arsize:6, rdata:0x0000000000dadc
-# arid: 1, araddr:0x0000003f, arlen:  2, arsize:6, rdata:0x00000000008e75
-# arid: 1, araddr:0x0000003f, arlen:  2, arsize:6, rdata:0x00000000000001
+# arid: 1, araddr:0x00000020, arlen:  2, arsize:6, rdata:0xfffffffffffffffffffffee47dadc
+# arid: 1, araddr:0x00000020, arlen:  2, arsize:6, rdata:0xfffffffffffffffffffffbaa68e75
+# arid: 1, araddr:0x00000020, arlen:  2, arsize:6, rdata:0xffffffffffffffffffffff5984aeb
 
-# arid: 1, araddr:0x00000040, arlen:  2, arsize:6, rdata:0x00000000008e75
-# arid: 1, araddr:0x00000040, arlen:  2, arsize:6, rdata:0x00000000000001
-# arid: 1, araddr:0x00000040, arlen:  2, arsize:6, rdata:0xbbbbbbbbbbbbbb
+# arid: 1, araddr:0x00000040, arlen:  2, arsize:6, rdata:0xfffffffffffffffffffffbaa68e75
+# arid: 1, araddr:0x00000040, arlen:  2, arsize:6, rdata:0xffffffffffffffffffffff5984aeb
+# arid: 1, araddr:0x00000040, arlen:  2, arsize:6, rdata:0x1111111111111bbbbbbbbbbbbbbbb
 
-# arid: 1, araddr:0x00000041, arlen:  2, arsize:6, rdata:0x00000000008e75
-# arid: 1, araddr:0x00000041, arlen:  2, arsize:6, rdata:0x00000000000001
-# arid: 1, araddr:0x00000041, arlen:  2, arsize:6, rdata:0xbbbbbbbbbbbbbb
+# arid: 2, araddr:0x00000060, arlen:  2, arsize:6, rdata:0xfffffffffffffffffffffbaa68e75
+# arid: 2, araddr:0x00000060, arlen:  2, arsize:6, rdata:0xffffffffffffffffffffff5984aeb
+# arid: 2, araddr:0x00000060, arlen:  2, arsize:6, rdata:0x1111111111111bbbbbbbbbbbbbbbb
 
-# arid: 1, araddr:0x00000060, arlen:  2, arsize:6, rdata:0x00000000008e75
-# arid: 1, araddr:0x00000060, arlen:  2, arsize:6, rdata:0x00000000000001
-# arid: 1, araddr:0x00000060, arlen:  2, arsize:6, rdata:0xbbbbbbbbbbbbbb
+# arid: 1, araddr:0x00000080, arlen:  2, arsize:6, rdata:0xffffffffffffffffffffff5984aeb
+# arid: 1, araddr:0x00000080, arlen:  2, arsize:6, rdata:0x1111111111111bbbbbbbbbbbbbbbb
+# arid: 1, araddr:0x00000080, arlen:  2, arsize:6, rdata:0x112a4e737ea01e08112a4e737ea01
 
+# arid: 2, araddr:0x000000a0, arlen:  2, arsize:6, rdata:0xffffffffffffffffffffff5984aeb
+# arid: 2, araddr:0x000000a0, arlen:  2, arsize:6, rdata:0x1111111111111bbbbbbbbbbbbbbbb
+# arid: 2, araddr:0x000000a0, arlen:  2, arsize:6, rdata:0x3cf43e61de915ef63cf43e61de915
 
-# arid: 1, araddr:0x0000007f, arlen:  2, arsize:6, rdata:0x00000000008e75
-# arid: 1, araddr:0x0000007f, arlen:  2, arsize:6, rdata:0x00000000000001
-# arid: 1, araddr:0x0000007f, arlen:  2, arsize:6, rdata:0xbbbbbbbbbbbbbb
-
-# arid: 1, araddr:0x00000080, arlen:  2, arsize:6, rdata:0x00000000000001
-# arid: 1, araddr:0x00000080, arlen:  2, arsize:6, rdata:0xbbbbbbbbbbbbbb
-# arid: 1, araddr:0x00000080, arlen:  2, arsize:6, rdata:0xe2d667481efa16
-
-# arid: 1, araddr:0x00000081, arlen:  2, arsize:6, rdata:0x00000000000001
-# arid: 1, araddr:0x00000081, arlen:  2, arsize:6, rdata:0xbbbbbbbbbbbbbb
-# arid: 1, araddr:0x00000081, arlen:  2, arsize:6, rdata:0x84bfa600786ac0
-
-# arid: 1, araddr:0x00000100, arlen:  2, arsize:6, rdata:0xf60defa534ff55
-# arid: 1, araddr:0x00000100, arlen:  2, arsize:6, rdata:0xf60defa534ff55
-# arid: 1, araddr:0x00000100, arlen:  2, arsize:6, rdata:0xf60defa534ff55
+# arid: 1, araddr:0x000000c0, arlen:  2, arsize:6, rdata:0x1111111111111bbbbbbbbbbbbbbbb
+# arid: 1, araddr:0x000000c0, arlen:  2, arsize:6, rdata:0x65f9b314c56cb84365f9b314c56cb
+# arid: 1, araddr:0x000000c0, arlen:  2, arsize:6, rdata:0x65f9b314c56cb84365f9b314c56cb
 ```
-待总结
 # NOTE
 
 

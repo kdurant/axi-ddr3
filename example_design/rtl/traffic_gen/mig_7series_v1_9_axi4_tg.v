@@ -176,6 +176,7 @@ module mig_7series_v1_9_axi4_tg #(
    output [DBG_RD_STS_WIDTH-1:0]       dbg_rd_sts      // Read status
 );
 
+localparam              OFFSET = 512/8;
 task axi_write;
     input    [07:00]        awlen;
     input    [02:00]        awsize;
@@ -196,6 +197,7 @@ task axi_write;
             axi_wlen = awlen;
             axi_wsize = awsize;
             axi_wburst = awburst;
+            axi_waddr = addr;
             //repeat(2) @(posedge aclk);
             axi_wvalid = 1;
             wait (axi_wready);
@@ -211,11 +213,13 @@ task axi_write;
             begin
                 repeat(awlen)
                 begin
-                    axi_wd_data = ({$random} % 65536);
+                    //axi_wd_data = ({$random} % 2**32);
+                    axi_wd_data = $random;
                     @(posedge aclk);
                 end
                 axi_wd_last = 1;
-                axi_wd_data = ({$random} % 2);
+                //axi_wd_data = ({$random} % 2**32);
+                axi_wd_data = $random;
                 @(posedge aclk);
                 axi_wd_last = 0;
             end
@@ -261,43 +265,31 @@ endtask
 initial
 begin
     //axi_write(2, 6, 1, 0, 0);
-    axi_write(2, 6, 1, 'h0, 1);
+    axi_write(2, 6, 1, OFFSET*0, 1);
+    axi_write(2, 6, 1, OFFSET*0+1, 2);
+    //repeat(5) @(posedge aclk);
+    //axi_write(2, 6, 1, OFFSET*1, 2);
 
     repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h10, 1);
+    axi_read(2, 6, 1, 'h20, 1);
 
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h3f, 1);
     repeat(5) @(posedge aclk);
     axi_read(2, 6, 1, 'h40, 1);
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h41, 1);
 
     repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h5f, 1);
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h60, 1);
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h61, 1);
+    axi_read(2, 6, 1, 'h60, 2);
 
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h63, 1);
-
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h64, 1);
-
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h65, 1);
-
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h7f, 1);
     repeat(5) @(posedge aclk);
     axi_read(2, 6, 1, 'h80, 1);
-    repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h81, 1);
 
     repeat(5) @(posedge aclk);
-    axi_read(2, 6, 1, 'h100, 1);
+    axi_read(2, 6, 1, 'ha0, 2);
+
+    repeat(5) @(posedge aclk);
+    axi_read(2, 6, 1, 'hc0, 1);
+
+    //repeat(5) @(posedge aclk);
+    //axi_read(2, 6, 1, OFFSET*1, 2);
 end
 
 endmodule

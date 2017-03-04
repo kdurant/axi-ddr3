@@ -34,5 +34,5 @@ log -r /*
 radix 16
 
 do wave.do
-run 111us
+run 120us
 
