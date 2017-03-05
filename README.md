@@ -85,9 +85,19 @@
 # arid: 1, araddr:0x000000c0, arlen:  2, arsize:6, rdata:0x65f9b314c56cb84365f9b314c56cb
 # arid: 1, araddr:0x000000c0, arlen:  2, arsize:6, rdata:0x65f9b314c56cb84365f9b314c56cb
 ```
+
+# DDR3 IP默认配置
+主要针对example_top.v，这个模块里调用DDR3 IP
+1. sys_clk_p, sys_clk_n, 输入400MHz差分时钟，
+2. clk_ref_p, clk_ref_n, 输入200MHz差分时钟，
+3. sys_rst, 低电平复位
+4. demo里驱动模块主频100MHz
+
 # NOTE
 
 
-[1]: https://github.com/kdurant/axi-ddr3/blob/master/docs/pic/axi_burst_length.png?raw=true
-[2]: https://github.com/kdurant/axi-ddr3/blob/master/docs/pic/axi_burst_size.png?raw=true
-[3]: https://github.com/kdurant/axi-ddr3/blob/master/docs/pic/awid==0.png?raw=true
+[1]: https://raw.githubusercontent.com/kdurant/axi-ddr3/master/docs/pic/axi_burst_length.png
+[2]: https://raw.githubusercontent.com/kdurant/axi-ddr3/master/docs/pic/axi_burst_size.png
+[3]: https://raw.githubusercontent.com/kdurant/axi-ddr3/master/docs/pic/awid%3D%3D0.png
+
+
