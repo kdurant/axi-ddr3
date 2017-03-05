@@ -40,8 +40,6 @@
 
 2. master写好地址和ID后，发送arvalid信号，等待arready， 然后发送rready，在rready和rvalid同时有效期间出数据
 
-    ![pic][5]        
-
 3. wid和rid可以不一致。例如：wid = 1， rid = 2，只要操作地址一致，就可以正确读出数据
     
 4. 读写地址
@@ -90,8 +88,6 @@
 # NOTE
 
 
-[1]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/axi_burst_length.png
-[2]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/axi_burst_size.png
-[3]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/awid%253D%253D0.png
-[4]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/awid%253D%253D1.png
-[5]: https://coding.net/u/kdurant/p/axi_ddr3/git/raw/master/docs/pic/arid%253D%253D0.png
+[1]: https://github.com/kdurant/axi-ddr3/blob/master/docs/pic/axi_burst_length.png?raw=true
+[2]: https://github.com/kdurant/axi-ddr3/blob/master/docs/pic/axi_burst_size.png?raw=true
+[3]: https://github.com/kdurant/axi-ddr3/blob/master/docs/pic/awid==0.png?raw=true

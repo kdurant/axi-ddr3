@@ -265,8 +265,9 @@ endtask
 initial
 begin
     //axi_write(2, 6, 1, 0, 0);
-    axi_write(2, 6, 1, OFFSET*0, 1);
-    axi_write(2, 6, 1, OFFSET*0+1, 2);
+    axi_write(0, 6, 1, OFFSET*0, 0);
+    axi_write(0, 6, 1, OFFSET*1, 0);
+    axi_write(0, 6, 1, OFFSET*2, 0);
     //repeat(5) @(posedge aclk);
     //axi_write(2, 6, 1, OFFSET*1, 2);
 
