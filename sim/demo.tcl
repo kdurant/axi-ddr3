@@ -22,6 +22,7 @@ vlog -incr      ../user_design/rtl/axi/*.v
 vlog -incr      ../example_design/sim/wiredly.v
 vlog -incr      ../example_design/sim/sim_tb_top.v
 
+vlog -incr      ../sim/*.v
 vlog -incr +incdir+../example_design/sim +define+x2Gb +define+sg187E +define+x8 ../example_design/sim/ddr3_model.v
 
 #Pass the parameters for memory model parameter file#

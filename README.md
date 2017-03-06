@@ -93,6 +93,11 @@
 3. sys_rst, 低电平复位
 4. demo里驱动模块主频100MHz
 
+# 转移axi master到testbench
+1. axi接口
+
+2. ddr3 IP输出的用户时钟和复位
+
 # NOTE
 
 

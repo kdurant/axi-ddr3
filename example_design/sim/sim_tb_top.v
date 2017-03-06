@@ -735,6 +735,45 @@ module sim_tb_top;
   endgenerate
     
 
+  wire [C_S_AXI_ID_WIDTH-1:0]       s_axi_awid;
+  wire [C_S_AXI_ADDR_WIDTH-1:0]     s_axi_awaddr;
+  wire [7:0]                        s_axi_awlen;
+  wire [2:0]                        s_axi_awsize;
+  wire [1:0]                        s_axi_awburst;
+  wire [0:0]                        s_axi_awlock;
+  wire [3:0]                        s_axi_awcache;
+  wire [2:0]                        s_axi_awprot;
+  wire                              s_axi_awvalid;
+  wire                              s_axi_awready;
+   // Slave Interface Write Data Ports
+  wire [C_S_AXI_DATA_WIDTH-1:0]     s_axi_wdata;
+  wire [C_S_AXI_DATA_WIDTH/8-1:0]   s_axi_wstrb;
+  wire                              s_axi_wlast;
+  wire                              s_axi_wvalid;
+  wire                              s_axi_wready;
+   // Slave Interface Write Response Ports
+  wire                              s_axi_bready;
+  wire [C_S_AXI_ID_WIDTH-1:0]       s_axi_bid;
+  wire [1:0]                        s_axi_bresp;
+  wire                              s_axi_bvalid;
+   // Slave Interface Read Address Ports
+  wire [C_S_AXI_ID_WIDTH-1:0]       s_axi_arid;
+  wire [C_S_AXI_ADDR_WIDTH-1:0]     s_axi_araddr;
+  wire [7:0]                        s_axi_arlen;
+  wire [2:0]                        s_axi_arsize;
+  wire [1:0]                        s_axi_arburst;
+  wire [0:0]                        s_axi_arlock;
+  wire [3:0]                        s_axi_arcache;
+  wire [2:0]                        s_axi_arprot;
+  wire                              s_axi_arvalid;
+  wire                              s_axi_arready;
+   // Slave Interface Read Data Ports
+  wire                              s_axi_rready;
+  wire [C_S_AXI_ID_WIDTH-1:0]       s_axi_rid;
+  wire [C_S_AXI_DATA_WIDTH-1:0]     s_axi_rdata;
+  wire [1:0]                        s_axi_rresp;
+  wire                              s_axi_rlast;
+  wire                              s_axi_rvalid;
     
 
   //===========================================================================
@@ -914,6 +953,45 @@ module sim_tb_top;
    u_ip_top
      (
 
+	.clk                   	(	ddr_clk                   	),
+	.rst                   	(	ddr_rst                   	),
+
+	.s_axi_awid            	(	s_axi_awid            	),
+	.s_axi_awaddr          	(	s_axi_awaddr          	),
+	.s_axi_awlen         	(	s_axi_awlen         	),
+	.s_axi_awsize        	(	s_axi_awsize        	),
+	.s_axi_awburst       	(	s_axi_awburst       	),
+	.s_axi_awlock        	(	s_axi_awlock        	),
+	.s_axi_awcache       	(	s_axi_awcache       	),
+	.s_axi_awprot        	(	s_axi_awprot        	),
+	.s_axi_awvalid         	(	s_axi_awvalid         	),
+	.s_axi_awready         	(	s_axi_awready         	),
+	.s_axi_wdata         	(	s_axi_wdata         	),
+	.s_axi_wstrb           	(	s_axi_wstrb           	),
+	.s_axi_wlast         	(	s_axi_wlast         	),
+	.s_axi_wvalid        	(	s_axi_wvalid        	),
+	.s_axi_wready          	(	s_axi_wready          	),
+	.s_axi_bready        	(	s_axi_bready        	),
+	.s_axi_bid             	(	s_axi_bid             	),
+	.s_axi_bresp           	(	s_axi_bresp           	),
+	.s_axi_bvalid          	(	s_axi_bvalid          	),
+	.s_axi_arid          	(	s_axi_arid          	),
+	.s_axi_araddr        	(	s_axi_araddr        	),
+	.s_axi_arlen         	(	s_axi_arlen         	),
+	.s_axi_arsize        	(	s_axi_arsize        	),
+	.s_axi_arburst       	(	s_axi_arburst       	),
+	.s_axi_arlock        	(	s_axi_arlock        	),
+	.s_axi_arcache       	(	s_axi_arcache       	),
+	.s_axi_arprot        	(	s_axi_arprot        	),
+	.s_axi_arvalid       	(	s_axi_arvalid       	),
+	.s_axi_arready       	(	s_axi_arready       	),
+	.s_axi_rready        	(	s_axi_rready        	),
+	.s_axi_rid             	(	s_axi_rid             	),
+	.s_axi_rdata           	(	s_axi_rdata           	),
+	.s_axi_rresp           	(	s_axi_rresp           	),
+	.s_axi_rlast           	(	s_axi_rlast           	),
+	.s_axi_rvalid          	(	s_axi_rvalid          	),
+
      .ddr3_dq              (ddr3_dq_fpga),
      .ddr3_dqs_n           (ddr3_dqs_n_fpga),
      .ddr3_dqs_p           (ddr3_dqs_p_fpga),
@@ -1016,4 +1094,46 @@ module sim_tb_top;
      join
   end
     
+axi_drive	axi_driveEx01
+(
+	.clk                   	(	ddr_clk                   	),
+	.rst                   	(	ddr_rst                   	),
+	.init_calib_complete    (	init_calib_complete     ),
+	.s_axi_awid            	(	s_axi_awid            	),
+	.s_axi_awaddr          	(	s_axi_awaddr          	),
+	.s_axi_awlen         	(	s_axi_awlen         	),
+	.s_axi_awsize        	(	s_axi_awsize        	),
+	.s_axi_awburst       	(	s_axi_awburst       	),
+	.s_axi_awlock        	(	s_axi_awlock        	),
+	.s_axi_awcache       	(	s_axi_awcache       	),
+	.s_axi_awprot        	(	s_axi_awprot        	),
+	.s_axi_awvalid         	(	s_axi_awvalid         	),
+	.s_axi_awready         	(	s_axi_awready         	),
+	.s_axi_wdata         	(	s_axi_wdata         	),
+	.s_axi_wstrb           	(	s_axi_wstrb           	),
+	.s_axi_wlast         	(	s_axi_wlast         	),
+	.s_axi_wvalid        	(	s_axi_wvalid        	),
+	.s_axi_wready          	(	s_axi_wready          	),
+	.s_axi_bready        	(	s_axi_bready        	),
+	.s_axi_bid             	(	s_axi_bid             	),
+	.s_axi_bresp           	(	s_axi_bresp           	),
+	.s_axi_bvalid          	(	s_axi_bvalid          	),
+	.s_axi_arid          	(	s_axi_arid          	),
+	.s_axi_araddr        	(	s_axi_araddr        	),
+	.s_axi_arlen         	(	s_axi_arlen         	),
+	.s_axi_arsize        	(	s_axi_arsize        	),
+	.s_axi_arburst       	(	s_axi_arburst       	),
+	.s_axi_arlock        	(	s_axi_arlock        	),
+	.s_axi_arcache       	(	s_axi_arcache       	),
+	.s_axi_arprot        	(	s_axi_arprot        	),
+	.s_axi_arvalid       	(	s_axi_arvalid       	),
+	.s_axi_arready       	(	s_axi_arready       	),
+	.s_axi_rready        	(	s_axi_rready        	),
+	.s_axi_rid             	(	s_axi_rid             	),
+	.s_axi_rdata           	(	s_axi_rdata           	),
+	.s_axi_rresp           	(	s_axi_rresp           	),
+	.s_axi_rlast           	(	s_axi_rlast           	),
+	.s_axi_rvalid          	(	s_axi_rvalid          	)
+) ;
+
 endmodule
