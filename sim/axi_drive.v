@@ -158,28 +158,28 @@ begin
     axi_write(0, 6, 1, OFFSET*0, 0);
     axi_write(0, 6, 1, OFFSET*1, 0);
     axi_write(0, 6, 1, OFFSET*2, 0);
-    //repeat(5) @(posedge aclk);
+    //repeat(5) @(posedge clk);
     //axi_write(2, 6, 1, OFFSET*1, 2);
 
-    repeat(5) @(posedge aclk);
+    repeat(5) @(posedge clk);
     axi_read(2, 6, 1, 'h20, 1);
 
-    repeat(5) @(posedge aclk);
+    repeat(5) @(posedge clk);
     axi_read(2, 6, 1, 'h40, 1);
 
-    repeat(5) @(posedge aclk);
+    repeat(5) @(posedge clk);
     axi_read(2, 6, 1, 'h60, 2);
 
-    repeat(5) @(posedge aclk);
+    repeat(5) @(posedge clk);
     axi_read(2, 6, 1, 'h80, 1);
 
-    repeat(5) @(posedge aclk);
+    repeat(5) @(posedge clk);
     axi_read(2, 6, 1, 'ha0, 2);
 
-    repeat(5) @(posedge aclk);
+    repeat(5) @(posedge clk);
     axi_read(2, 6, 1, 'hc0, 1);
 
-    //repeat(5) @(posedge aclk);
+    //repeat(5) @(posedge clk);
     //axi_read(2, 6, 1, OFFSET*1, 2);
 end
 endmodule
